@@ -3,6 +3,9 @@ package com.login.springlogin.service;
 import org.springframework.stereotype.Service;
 import com.login.springlogin.repositories.UserRepository;
 import com.login.springlogin.models.User;
+
+import java.util.Optional;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
@@ -20,6 +23,10 @@ public class UserService {
         String senhaCriptografada = passwordEncoder.encode(user.getPassword());
         user.setPassword(senhaCriptografada);
         return userRepository.save(user);
+    }
+
+    public Optional<User> findEmail(String email){
+        return Optional.ofNullable(userRepository.findByEmail(email));
     }
 
 }
