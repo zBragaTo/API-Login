@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import com.login.springlogin.repositories.UserRepository;
 import com.login.springlogin.models.User;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,6 +28,10 @@ public class UserService {
 
     public Optional<User> findEmail(String email){
         return Optional.ofNullable(userRepository.findByEmail(email));
+    }
+
+    public List<User> findAll(){
+        return userRepository.findAll();
     }
 
 }

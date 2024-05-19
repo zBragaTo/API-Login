@@ -1,5 +1,7 @@
 package com.login.springlogin.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +26,12 @@ public class UserController {
         return userService.findEmail(email).
         map(ResponseEntity::ok).
         orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers(){
+        List<User> users = userService.findAll();
+        return ResponseEntity.ok(users);
     }
 
     @PostMapping("/register")
