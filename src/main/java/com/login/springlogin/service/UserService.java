@@ -1,6 +1,7 @@
 package com.login.springlogin.service;
 
 import org.springframework.stereotype.Service;
+
 import com.login.springlogin.repositories.UserRepository;
 import com.login.springlogin.dto.mapper.UserDTOMapper;
 import com.login.springlogin.dto.response.UserDTO;
@@ -44,7 +45,28 @@ public class UserService {
         return Optional.of(userRepository.findAll())
         .filter(list -> !list.isEmpty())
         .map(list -> list.stream().map(userDTOMapper).toList())
-        .orElseThrow(() -> new RuntimeException("No users found."));
+        .orElseThrow(() -> new RuntimeException("Nenhum usuário encontrado!."));
+    }
+
+    public User updateUser(Long id, User updatedUser){
+        Optional<User> existingUserOptional = userRepository.findById(id);
+        User existingUser = existingUserOptional.get();
+        existingUser.setUser(updatedUser.getUser());
+        existingUser.setEmail(updatedUser.getEmail());
+        if(updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()){
+            String senhaCriptografada = passwordEncoder.encode(updatedUser.getPassword());
+            existingUser.setPassword(senhaCriptografada);
+        }
+        return userRepository.save(existingUser);
+    }
+
+    public void delete(Long id){
+        Optional<User> usuario = userRepository.findById(id);
+        if (usuario.isPresent()) {
+            userRepository.deleteById(id);
+        } else {
+            throw new IllegalArgumentException("Usuário não encontrado.");
+        } 
     }
 
 }
