@@ -10,20 +10,21 @@ import com.login.springlogin.models.User;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
 @Service
 public class UserService {
-    private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
-    private final UserDTOMapper userDTOMapper;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, UserDTOMapper userDTOMapper){
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.userDTOMapper = userDTOMapper;
-    }
+    @Autowired
+    private  UserRepository userRepository;
+
+    @Autowired
+    private  BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private  UserDTOMapper userDTOMapper;
 
     public User saveUser(User user){
         Optional<User> usuarioExistente = userRepository.findByEmail(user.getEmail());

@@ -2,6 +2,9 @@ package com.login.springlogin.controllers;
 
 import java.util.List;
 
+import org.springframework.validation.annotation.Validated;
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +24,7 @@ import com.login.springlogin.service.UserService;
 
 @RestController
 @RequestMapping("/api/users")
+@Validated
 public class UserController {
     
     @Autowired
@@ -40,7 +44,7 @@ public class UserController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updatedUser){
+    public ResponseEntity<?> updateUser(@PathVariable Long id,@RequestBody User updatedUser) {
         User updated = userService.updateUser(id, updatedUser);
         return ResponseEntity.ok(updated);
     }
@@ -52,7 +56,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody User user){
+    public ResponseEntity<User> register(@Validated @RequestBody User user){
             User newUser = userService.saveUser(user);
             return ResponseEntity.ok(newUser);
         }
