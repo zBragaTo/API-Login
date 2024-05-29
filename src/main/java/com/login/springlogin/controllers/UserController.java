@@ -3,7 +3,6 @@ package com.login.springlogin.controllers;
 import java.util.List;
 
 import org.springframework.validation.annotation.Validated;
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
