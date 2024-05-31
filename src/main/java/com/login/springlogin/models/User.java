@@ -29,4 +29,6 @@ public class User {
     @NotBlank(message = "O campo 'password' é obrigatório")
     private String password;
 
+    private boolean enabled;
+
 }
