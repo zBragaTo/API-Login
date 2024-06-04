@@ -30,16 +30,32 @@ public class UserService {
         Optional<User> usuarioExistente = userRepository.findByEmail(user.getEmail());
         if (usuarioExistente.isPresent()) {
             throw new IllegalArgumentException("E-mail já está em uso.");
+        }    
+        if (user.getPassword() != null) {
+            String senhaCriptografada = passwordEncoder.encode(user.getPassword());
+            user.setPassword(senhaCriptografada);
         }
+        return userRepository.save(user);
+    }
 
-        String senhaCriptografada = passwordEncoder.encode(user.getPassword());
-        user.setPassword(senhaCriptografada);
+    public User saveUserWithoutCheckEmail(User user) {
+        if (user.getPassword() != null) {
+            String senhaCriptografada = passwordEncoder.encode(user.getPassword());
+            user.setPassword(senhaCriptografada);
+        }
+        if(!user.isEnabled()){
+            user.setEnabled(false);
+        }
         return userRepository.save(user);
     }
     
 
     public Optional<User> findEmail(String email){
         return userRepository.findByEmail(email);
+    }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
     }
 
     public List<UserDTO> findAll(){
