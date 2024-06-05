@@ -16,7 +16,7 @@ import com.login.springlogin.service.UserService;
 import com.login.springlogin.token.JwtTokenUtil;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/users")
 public class AuthController {
 
     @Autowired
@@ -27,9 +27,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
-        User newUser = userService.saveUserWithoutCheckEmail(user);
+        User newUser = userService.saveUser(user);
         String token = JwtTokenUtil.generateEmailVerificationToken(newUser.getEmail());
-        String verificationLink = "http://localhost:8080/api/auth/verify?token=" + token;
+        String verificationLink = "http://localhost:8080/api/users/verify?token=" + token;
         emailService.sendSimpleMessage(newUser.getEmail(), "Verificação de Email", "Clique no link para verificar seu email: " + verificationLink);
         return ResponseEntity.ok("Registro bem-sucedido. Verifique seu email para ativar sua conta.");
     }
