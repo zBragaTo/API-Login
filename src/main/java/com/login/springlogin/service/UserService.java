@@ -67,13 +67,20 @@ public class UserService {
 
     public User updateUser(Long id, User updatedUser){
         Optional<User> existingUserOptional = userRepository.findById(id);
+        
+        if (!existingUserOptional.isPresent()) {
+            throw new IllegalArgumentException("Usuário não encontrado.");
+        }
+
         User existingUser = existingUserOptional.get();
         existingUser.setUser(updatedUser.getUser());
         existingUser.setEmail(updatedUser.getEmail());
+
         if(updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()){
             String senhaCriptografada = passwordEncoder.encode(updatedUser.getPassword());
             existingUser.setPassword(senhaCriptografada);
         }
+
         return userRepository.save(existingUser);
     }
 
