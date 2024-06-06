@@ -65,23 +65,36 @@ public class UserService {
         .orElseThrow(() -> new RuntimeException("Nenhum usuário encontrado!."));
     }
 
-    public User updateUser(Long id, User updatedUser){
+    public boolean updateUser(Long id, User updatedUser) {
         Optional<User> existingUserOptional = userRepository.findById(id);
-        
         if (!existingUserOptional.isPresent()) {
             throw new IllegalArgumentException("Usuário não encontrado.");
         }
 
         User existingUser = existingUserOptional.get();
-        existingUser.setUser(updatedUser.getUser());
-        existingUser.setEmail(updatedUser.getEmail());
+        boolean emailChanged = false;
 
-        if(updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()){
-            String senhaCriptografada = passwordEncoder.encode(updatedUser.getPassword());
-            existingUser.setPassword(senhaCriptografada);
+        if (!existingUser.getEmail().equals(updatedUser.getEmail())) {
+            Optional<User> userWithSameEmail = userRepository.findByEmail(updatedUser.getEmail());
+            if (userWithSameEmail.isPresent()) {
+                throw new IllegalArgumentException("E-mail já está em uso.");
+            }
+            existingUser.setEmail(updatedUser.getEmail());
+            existingUser.setEnabled(false); // Desabilitar até verificar o novo e-mail
+            emailChanged = true;
         }
 
-        return userRepository.save(existingUser);
+        existingUser.setUser(updatedUser.getUser());
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
+
+        userRepository.save(existingUser);
+        return emailChanged;
+    }
+
+    public User findById(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     public void delete(Long id){
