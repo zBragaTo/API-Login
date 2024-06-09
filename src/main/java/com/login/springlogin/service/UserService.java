@@ -3,6 +3,7 @@ package com.login.springlogin.service;
 import org.springframework.stereotype.Service;
 
 import com.login.springlogin.repositories.UserRepository;
+import com.login.springlogin.token.JwtTokenUtil;
 import com.login.springlogin.dto.mapper.UserDTOMapper;
 import com.login.springlogin.dto.response.UserDTO;
 import com.login.springlogin.models.User;
@@ -26,6 +27,9 @@ public class UserService {
     @Autowired
     private  UserDTOMapper userDTOMapper;
 
+    @Autowired
+    private EmailService emailService;
+
     public User saveUser(User user){
         Optional<User> usuarioExistente = userRepository.findByEmail(user.getEmail());
         if (usuarioExistente.isPresent()) {
@@ -35,7 +39,9 @@ public class UserService {
             String senhaCriptografada = passwordEncoder.encode(user.getPassword());
             user.setPassword(senhaCriptografada);
         }
-        return userRepository.save(user);
+        User newUser = userRepository.save(user);
+        sendVerificationEmail(newUser);
+        return newUser;
     }
 
     public User saveUserWithoutCheckEmail(User user) {
@@ -90,7 +96,18 @@ public class UserService {
         }
 
         userRepository.save(existingUser);
+
+        if (emailChanged) {
+            sendVerificationEmail(existingUser);
+        }
+
         return emailChanged;
+    }
+
+    private void sendVerificationEmail(User user) {
+        String token = JwtTokenUtil.generateEmailVerificationToken(user.getEmail());
+        String verificationLink = "http://localhost:8080/api/users/verify?token=" + token;
+        emailService.sendSimpleMessage(user.getEmail(), "Verificação de Email", "Clique no link para verificar seu email: " + verificationLink);
     }
 
     public User findById(Long id) {
