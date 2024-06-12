@@ -1,6 +1,7 @@
 package com.login.springlogin.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.validation.annotation.Validated;
 
@@ -27,10 +28,13 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/{email}")
-    public ResponseEntity<User> getUser(@PathVariable String email){
-        return userService.findEmail(email).
-        map(ResponseEntity::ok).
-        orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> getUser(@PathVariable String email){
+          try {
+            Optional<User> userOpt = userService.findEmail(email);
+            return ResponseEntity.ok(userOpt);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @GetMapping

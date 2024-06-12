@@ -1,5 +1,6 @@
 package com.login.springlogin.controllers;
 
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,10 +49,29 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestBody String email) {
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        if (email == null || email.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email é obrigatório.");
+        }
+        
         try {
             userService.sendPasswordResetEmail(email);
             return ResponseEntity.ok("Email de recuperação enviado com sucesso.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestParam("token") String token, @RequestBody Map<String, String> request) {
+        String newPassword = request.get("newPassword");
+        if (newPassword == null || newPassword.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nova senha é obrigatória.");
+        }
+        try {
+            userService.resetPassword(token, newPassword);
+            return ResponseEntity.ok("Senha alterada com sucesso.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

@@ -57,7 +57,12 @@ public class UserService {
     
 
     public Optional<User> findEmail(String email){
-        return userRepository.findByEmail(email);
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if(userOpt.isPresent()){
+            return userOpt;
+        } else {
+            throw new IllegalArgumentException("Usuário com e-mail " + email + " não encontrado.");
+        }
     }
 
     public User findByEmail(String email) {
@@ -68,7 +73,7 @@ public class UserService {
         return Optional.of(userRepository.findAll())
         .filter(list -> !list.isEmpty())
         .map(list -> list.stream().map(userDTOMapper).toList())
-        .orElseThrow(() -> new RuntimeException("Nenhum usuário encontrado!."));
+        .orElseThrow(() -> new IllegalArgumentException("Nenhum usuário encontrado!"));
     }
 
     public boolean updateUser(Long id, User updatedUser) {
