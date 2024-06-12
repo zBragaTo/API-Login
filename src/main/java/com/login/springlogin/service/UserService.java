@@ -110,6 +110,30 @@ public class UserService {
         emailService.sendSimpleMessage(user.getEmail(), "Verificação de Email", "Clique no link para verificar seu email: " + verificationLink);
     }
 
+    public void sendPasswordResetEmail(String email) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (!userOpt.isPresent()) {
+            throw new IllegalArgumentException("E-mail não encontrado.");
+        }
+
+        User user = userOpt.get();
+        String token = JwtTokenUtil.generateEmailVerificationToken(user.getEmail());
+        String resetLink = "http://localhost:8080/api/users/reset-password?token=" + token;
+        emailService.sendSimpleMessage(user.getEmail(), "Redefinição de Senha", "Clique no link para redefinir sua senha: " + resetLink);
+    }
+
+    public void resetPassword(String token, String newPassword) {
+        String email = JwtTokenUtil.getEmailFromToken(token);
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (!userOpt.isPresent()) {
+            throw new IllegalArgumentException("Token inválido.");
+        }
+
+        User user = userOpt.get();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
     public User findById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
