@@ -47,6 +47,16 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody String email) {
+        try {
+            userService.sendPasswordResetEmail(email);
+            return ResponseEntity.ok("Email de recuperação enviado com sucesso.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @GetMapping("/verify")
     public ResponseEntity<?> verifyEmail(@RequestParam("token") String token) {
         if (JwtTokenUtil.isTokenExpired(token)) {
