@@ -6,6 +6,7 @@ Este é um sistema (API) de login e registro construído com Spring Boot. Ele su
 
 - Registro de usuário
 - Login de usuário
+- Encriptografamento da Senha
 - Verificação de e-mail
 - Recuperação de senha
 - Atualização de perfil de usuário
